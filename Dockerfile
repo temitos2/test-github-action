@@ -1,11 +1,19 @@
-FROM jenkins/jenkins:lts-centos
-USER root
-RUN dnf update -y && dnf install -y 'dnf-command(config-manager)' && \
-dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo && \
-dnf list docker-ce && \
-dnf update && \
-dnf install docker-ce --nobest -y && \
-dnf clean all
+FROM jenkins/jenkins:lts
+USER nonroot
+RUN apt-get update && \
+apt-get -y install apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common && \
+curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey && \
+add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+    $(lsb_release -cs) \
+    stable" && \
+apt-get update && \
+apt-get -y install docker-ce
+RUN apt-get install -y docker-ce
 RUN usermod -a -G docker jenkins
 USER jenkins
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
