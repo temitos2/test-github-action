@@ -1,5 +1,5 @@
 FROM jenkins/jenkins:lts
-USER nonroot
+USER nonroot:nonroot
 RUN apt-get update && \
 apt-get -y install apt-transport-https \
     ca-certificates \
