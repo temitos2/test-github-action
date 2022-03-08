@@ -1,29 +1,18 @@
-FROM ubuntu:trusty
+FROM jenkins/jenkins:lts-centos
+USER root
+RUN dnf update -y && dnf install -y 'dnf-command(config-manager)' && \
+dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo && \
+dnf list docker-ce && \
+dnf update && \
+dnf install docker-ce --nobest -y && \
+dnf clean all
+RUN usermod -a -G docker jenkins
+USER jenkins
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV JENKINS_USER admin
+ENV JENKINS_PASS admin
+COPY plugins.txt /usr/share/jenkins/ref/
 
-MAINTAINER ubuntu server cookbook
-
-# Install base packages
-
-RUN apt-get update && apt-get -yq install apache2 && \
-
-apt-get clean && \
-
-rm -rf /var/lib/apt/lists/*
-
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-ENV APACHE_RUN_USER www-data
-
-ENV APACHE_RUN_GROUP www-data
-
-ENV APACHE_LOG_DIR /var/log/apache2
-
-ENV APACHE_PID_FILE /var/run/apache2.pid
-
-ENV APACHE_LOCK_DIR /var/www/html
-
-VOLUME ["/var/www/html"]
-
-EXPOSE 80
-
-CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+# COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
