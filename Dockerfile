@@ -1,21 +1,8 @@
-# Build stage
-FROM golang:1.16-alpine3.13 AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o main main.go
-RUN apk --no-cache add curl
-RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+# we will use openjdk 8 with alpine as it is a very small linux distro
+FROM openjdk:8-jre-alpine3.9
 
-# Run stage
-FROM alpine:3.13
-WORKDIR /app
-COPY --from=builder /app/main .
-COPY --from=builder /app/migrate.linux-amd64 ./migrate
-COPY app.env .
-COPY start.sh .
-COPY wait-for.sh .
-COPY db/migration ./migration
+# copy the packaged jar file into our docker image
+COPY target/demo-0.0.1-SNAPSHOT.jar /demo.jar
 
-EXPOSE 8080
-CMD [ "/app/main" ]
-ENTRYPOINT [ "/app/start.sh" ]
+# set the startup command to execute the jar
+CMD ["java", "-jar", "/demo.jar"]
