@@ -9,6 +9,12 @@ do
     v) VERSION=${OPTARG};;
   esac
 done
+while getopts b: flag
+do
+  case "${flag}" in
+    v) CURRENT_VERSION=${OPTARG};;
+  esac
+done
 
 # get highest tag number, and add v0.1.0 if doesn't exist
 #git fetch --prune --unshallow 2>/dev/null
