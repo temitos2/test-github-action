@@ -13,6 +13,14 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v2
+      
+    - name: Generate build number
+      uses: einaregilsson/build-number@v3
+      with:
+        token: ${{secrets.github_token}}       
+        
+    - name: Print new build number
+      run: echo "Build number is $BUILD_NUMBER"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -28,7 +36,7 @@ jobs:
     - name: Automatic Tagging of Releases
       id: increment-git-tag
       run: |
-        bash ./build/git_update.sh -v major
+        bash ./build/git_update.sh -v major -b $BUILD_NUMBER
 
     - name: Build, Tag, and Push the Image to Amazon ECR
       id: build-image
