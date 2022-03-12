@@ -3,26 +3,24 @@
 VERSION=""
 
 # get parameters
-while getopts v: flag
+while getopts ":v:b:" flag
 do
   case "${flag}" in
     v) VERSION=${OPTARG};;
-  esac
-done
-while getopts b: flag
-do
-  case "${flag}" in
     b) CURRENT_VERSION=${OPTARG};;
   esac
 done
 
+
 # get highest tag number, and add v0.1.0 if doesn't exist
 #git fetch --prune --unshallow 2>/dev/null
-CURRENT_VERSION=`git describe --abbrev=0 --tags 2>/dev/null`
+#CURRENT_VERSION=`git describe --abbrev=0 --tags 2>/dev/null`
 
 if [[ $CURRENT_VERSION == '' ]]
 then
-  CURRENT_VERSION='v0.1.0'
+  CURRENT_VERSION='v.0.1.0'
+else
+  CURRENT_VERSION="v.$BUILD_NUMBER.1.0"
 fi
 echo "Current Version: $CURRENT_VERSION"
 
@@ -49,7 +47,7 @@ else
 fi
 
 # create new tag
-NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
+NEW_TAG="v.$VNUM1.$VNUM2.$VNUM3"
 echo "($VERSION) updating $CURRENT_VERSION to $NEW_TAG"
 
 # get current hash and see if it already has a tag
