@@ -12,7 +12,7 @@ done
 while getopts b: flag
 do
   case "${flag}" in
-    v) CURRENT_VERSION=${OPTARG};;
+    b) CURRENT_VERSION=${OPTARG};;
   esac
 done
 
