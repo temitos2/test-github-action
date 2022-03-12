@@ -1,4 +1,4 @@
-FROM matt9ucci/jenkins-powershell:lts
+FROM jenkins/jenkins:lts
 USER root
 RUN apt-get update && \
 apt-get -y install apt-transport-https \
